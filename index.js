@@ -34,6 +34,18 @@ const config = {
     delete: args.delete
 }
 
+function createFolder(src, cb) {
+  fs.mkdir(src, (err) => {
+    if (err && err.code === 'EEXIST') {
+      cb()
+    } else if (err) {
+      throw err
+    } else {
+      cb()
+    }
+})
+}
+
 function sorter(src) {
    fs.readdir(src, (err, files) => {
         if(err) throw err
@@ -50,36 +62,51 @@ function sorter(src) {
                 } else {
                     //создать папку dist если её нет!
                     const dist = './dist'
-                    fs.mkdir(dist, { recursive: true }, (err) => {
-                      if (err) throw err;
+                    // fs.mkdir(dist, { recursive: true }, (err) => {
+                    //   if (err) throw err;
                       
-                      console.log('Папка "dist" создана.')
+                    //   console.log('Папка "dist" создана.')
 
-                      //создать папку для файлов (первая буква файла: M)
-                      const firstLetter = currentPath[0].toUpperCase()
+                    //   //создать папку для файлов (первая буква файла: M)
+                    //   const firstLetter = file[0].toUpperCase()
+                    //   const distFolder = path.join(dist, firstLetter)
+
+                    //   fs.access(distFolder, (err) => {
+                    //       if (err) {
+                    //         console.log(`'${distFolder} не существует'`)
+
+                    //         fs.mkdir(distFolder, { recursive: true },(err) => {
+                    //           if (err) throw err;                    
+                    //         })
+                    //       } else {
+                    //         console.log(`'${distFolder} существует'`)
+
+                    //         //Копируем текущий файл
+                    //         const destinationPath = `${distFolder}/${file}`
+                    //         console.log(currentPath)
+                    //         fs.link(currentPath, destinationPath, (err) => {
+                    //           if (err) {
+                    //             console.log(`'${file} не скопирован'`)
+                    //             return
+                    //           } else {
+                    //             console.log(`'${file} скопирован'`)
+                    //           }
+                    //         })
+                    //       }
+                    //    })
+                    // })                           
+                    
+                    createFolder(dist, () => {
+                      const firstLetter = file[0].toUpperCase()
                       const distFolder = path.join(dist, firstLetter)
-                      fs.mkdir(distFolder, { recursive: true }, (err) => {
-                        if (err) throw err;
-                        console.log('Дочерняя папка создана.')
-
-                        fs.access(distFolder, (err) => {
-                          if (err) {
-                            console.log(`'${distFolder} не существует'`)
-                          } else {
-                            console.log(`'${distFolder} существует'`)
-
-                            //Копируем текущий файл
-                            const destinationPath = `${distFolder}/${currentPath}`
-                            console.log(currentPath)
-                            fs.link(currentPath, destinationPath, (err) => {
-                              if (err) throw err;
-                            })
-                          }
+                    
+                      createFolder(distFolder, () => {
+                        const destinationPath = `${distFolder}/${file}`
+                        fs.link(currentPath, destinationPath, (err) => {
+                          if (err) throw err;
                         })
                       })
-
-                    })                           
-                    //console.log('file: ', currentPath)
+                    })
                 }
             })
         })
@@ -91,3 +118,4 @@ try {
 } catch (error) {
     console.error(error)
 }
+
