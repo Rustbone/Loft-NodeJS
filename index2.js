@@ -54,10 +54,29 @@ const config = {
 async function copyFile(src, dest) {
   return new Promise((resolve, reject) =>{
       fs.link(src, dest, (err, stat) => {
-          if (err) reject(err)          
+          // if (err) reject(err)          
 
-          resolve(stat)
-          console.log( `'${src} скопирован'`)
+          // resolve(stat)
+          // console.log( `'${src} скопирован'`)
+          // if (err.code === 'EEXIST'){           
+          //   resolve(stat)
+          //   console.log(`'${src}' уже создан`)
+          // } else {
+          //   reject(err)          
+          //   console.error(`Ошибка при создании '${src}':`, err)
+          // }
+          if (err && err.code === 'EEXIST') {
+            if (err.code === 'EEXIST'){           
+              resolve(stat)
+              console.log(`'${src}' уже создан`)
+            } else {
+              reject(err)          
+              console.error(`Ошибка при создании '${src}':`, err)
+            }
+          } else {
+            resolve(stat)
+            console.log(`'${src}' создан`)
+          }
       })
   })
 }
