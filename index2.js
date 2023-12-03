@@ -54,7 +54,6 @@ const config = {
 async function copyFile(src, dest) {
   return new Promise((resolve, reject) =>{
       fs.link(src, dest, (err, stat) => {
-        console.log( 'errrrrrrrr')
           if (err) reject(err)          
 
           resolve(stat)
@@ -112,12 +111,12 @@ async function sorter(src) {
       if (stat.isDirectory()) {
           await sorter(currentPath)
       } else { 
-        const dist = await createDir('./dist')
+        //const dist = await createDir('./dist')
         //console.log('errorrwrehjwmwm') 
         //try {
          // console.log('перешли в try')
           const firstLetter = file[0].toUpperCase()
-          const pathFolder = path.join(dist, firstLetter)
+          const pathFolder = path.join('./dist', firstLetter)
           //console.log(firstLetter)
           await createDir(pathFolder)
           const destinationPath = `${pathFolder}/${file}`
